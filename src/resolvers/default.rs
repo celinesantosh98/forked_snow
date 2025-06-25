@@ -46,6 +46,9 @@ use crate::{
     types::{Cipher, Dh, Hash, Random},
 };
 
+use digest::{Update, FixedOutputReset, Output, Digest};
+use sha2::wrapper::Sha256Impl;
+
 // NB: Intentionally private so RNG details aren't leaked into
 // the public API.
 #[cfg(feature = "use-getrandom")]
@@ -164,7 +167,7 @@ struct CipherXChaChaPoly {
 #[cfg(feature = "use-sha2")]
 #[derive(Default)]
 struct HashSHA256 {
-    hasher: Sha256,
+    hasher: Sha256Impl,
 }
 
 /// Wraps `RustCrypto`'s SHA-512 implementation.
@@ -485,7 +488,7 @@ impl Hash for HashSHA256 {
     }
 
     fn reset(&mut self) {
-        self.hasher = Sha256::default();
+        self.hasher = Sha256Impl::default();//Sha256::default();
     }
 
     fn input(&mut self, data: &[u8]) {
