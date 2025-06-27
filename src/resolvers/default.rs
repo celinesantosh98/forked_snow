@@ -492,7 +492,8 @@ impl Hash for HashSHA256 {
     }
 
     fn input(&mut self, data: &[u8]) {
-        self.hasher.update(data);
+        //self.hasher.update(data);
+        digest::Update::update(&mut self.hasher, data);
     }
 
     fn result(&mut self, out: &mut [u8]) {
@@ -520,7 +521,9 @@ impl Hash for HashSHA512 {
     }
 
     fn input(&mut self, data: &[u8]) {
-        self.hasher.update(data);
+       // self.hasher.update(data);
+       digest::Update::update(&mut self.hasher, data);
+
     }
 
     fn result(&mut self, out: &mut [u8]) {

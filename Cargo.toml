@@ -87,6 +87,8 @@ pqcrypto-traits = { version = "0.3", optional = true }
 # ring crypto provider
 ring = { version = "0.17.12", optional = true }
 
+digest = "0.11.0-rc.0"
+
 [dev-dependencies]
 criterion = "0.6"
 serde = "1.0"
