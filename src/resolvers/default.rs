@@ -497,8 +497,8 @@ impl Hash for HashSHA256 {
     }
 
     fn result(&mut self, out: &mut [u8]) {
-        let hash = self.hasher.finalize_reset();
-        copy_slices!(hash.as_slice(), out);
+        // let hash : u8 = self.hasher.finalize_reset();
+        // copy_slices!(hash.as_slice(), out);
     }
 }
 
