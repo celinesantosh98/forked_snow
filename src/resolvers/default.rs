@@ -12,7 +12,7 @@ use blake2::{Blake2b, Blake2b512, Blake2s, Blake2s256, Digest as BlakeDigest};
 #[allow(unused)]
 // `blake2` and `sha2` both try to export `digest::Digest`.
 // We will import those with different aliases to prevent name clashes.
-use sha2::{Digest as ShaDigest, Sha256, Sha512};
+use sha2::{Digest as ShaDigest, Sha512, Sha256};
 
 // Ciphers
 #[cfg(feature = "use-chacha20poly1305")]
@@ -47,7 +47,7 @@ use crate::{
 };
 
 use digest::{Update, FixedOutputReset, Output, Digest};
-use sha2::wrapper::Sha256Impl;
+//use sha2::wrapper::Sha256Impl;
 
 // NB: Intentionally private so RNG details aren't leaked into
 // the public API.
@@ -167,7 +167,7 @@ struct CipherXChaChaPoly {
 #[cfg(feature = "use-sha2")]
 #[derive(Default)]
 struct HashSHA256 {
-    hasher: Sha256Impl,
+    hasher: Sha256 //Sha256Impl,
 }
 
 /// Wraps `RustCrypto`'s SHA-512 implementation.
@@ -488,11 +488,10 @@ impl Hash for HashSHA256 {
     }
 
     fn reset(&mut self) {
-        self.hasher = Sha256Impl::default();//Sha256::default();
+        self.hasher = Sha256::default(); 
     }
 
     fn input(&mut self, data: &[u8]) {
-        //self.hasher.update(data);
         digest::Update::update(&mut self.hasher, data);
     }
 
@@ -525,7 +524,7 @@ impl Hash for HashSHA512 {
        digest::Update::update(&mut self.hasher, data);
 
     }
-
+   
     fn result(&mut self, out: &mut [u8]) {
         let hash = self.hasher.finalize_reset();
         copy_slices!(hash.as_slice(), out);
