@@ -12,8 +12,10 @@ use blake2::{Blake2b, Blake2b512, Blake2s, Blake2s256, Digest as BlakeDigest};
 #[allow(unused)]
 // `blake2` and `sha2` both try to export `digest::Digest`.
 // We will import those with different aliases to prevent name clashes.
-use sha2::{Digest as ShaDigest, Sha512, Sha256};
 
+use sha2::{Digest as ShaDigest, Sha512, Sha256};
+#[cfg(feature = "use-curve25519")]
+use sha2::{derive_pubkey::Monitored_Dh25519};
 // Ciphers
 #[cfg(feature = "use-chacha20poly1305")]
 use chacha20poly1305::ChaCha20Poly1305;
@@ -83,7 +85,7 @@ impl CryptoResolver for DefaultResolver {
     fn resolve_dh(&self, choice: &DHChoice) -> Option<Box<dyn Dh>> {
         match *choice {
             #[cfg(feature = "use-curve25519")]
-            DHChoice::Curve25519 => Some(Box::<Dh25519>::default()),
+            DHChoice::Curve25519 => Some(Box::<Monitored_Dh25519>::default()),
             DHChoice::Curve448 => None,
             #[cfg(feature = "p256")]
             DHChoice::P256 => Some(Box::<P256>::default()),
@@ -207,7 +209,7 @@ impl Dh25519 {
 }
 
 #[cfg(feature = "use-curve25519")]
-impl Dh for Dh25519 {
+impl Dh for Monitored_Dh25519 {
     fn name(&self) -> &'static str {
         "25519"
     }
@@ -264,7 +266,7 @@ impl P256 {
 }
 
 #[cfg(feature = "p256")]
-impl Dh for P256 {
+impl Dh for Monitored_P256 {
     fn name(&self) -> &'static str {
         "P256"
     }
