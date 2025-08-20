@@ -15,7 +15,7 @@ use blake2::{Blake2b, Blake2b512, Blake2s, Blake2s256, Digest as BlakeDigest};
 
 use sha2::{Digest as ShaDigest, Sha512, Sha256};
 #[cfg(feature = "use-curve25519")]
-use sha2::{derive_pubkey::Monitored_Dh25519};
+use sha2::{derive_pubkey::{Monitored_Dh25519, emit_after_generate, emit_after_dh}};
 // Ciphers
 #[cfg(feature = "use-chacha20poly1305")]
 use chacha20poly1305::ChaCha20Poly1305;
@@ -50,6 +50,7 @@ use crate::{
 
 use digest::{Update, FixedOutputReset, Output, Digest};
 //use sha2::wrapper::Sha256Impl;
+
 
 // NB: Intentionally private so RNG details aren't leaked into
 // the public API.
@@ -294,6 +295,7 @@ impl Dh for Monitored_P256 {
         let mut bytes = [0_u8; 32];
         rng.try_fill_bytes(&mut bytes)?;
         self.privkey = bytes;
+        emit_after_generate(&self.privkey);
         self.derive_pubkey();
         Ok(())
     }
@@ -313,6 +315,7 @@ impl Dh for Monitored_P256 {
             p256::PublicKey::from_sec1_bytes(pubkey).or(Err(Error::Dh))?;
         let dh_output = p256::ecdh::diffie_hellman(secret_key_scalar, public_key.as_affine());
         copy_slices!(dh_output.raw_secret_bytes(), out);
+        //emit_after_dh(pubkey, &self.privkey);
         Ok(())
     }
 }

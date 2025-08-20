@@ -21,6 +21,8 @@ use core::{
     convert::{TryFrom, TryInto},
     fmt,
 };
+use sha2::derive_pubkey::{emit_init_peer};
+use base64::{engine::general_purpose, Engine as _};
 
 /// A state machine encompassing the handshake phase of a Noise session.
 ///
@@ -392,6 +394,13 @@ impl HandshakeState {
                     };
                     self.symmetricstate.decrypt_and_mix_hash(data, &mut self.rs[..pub_len])?;
                     self.rs.enable();
+                    // emitting init
+                    if !self.initiator {
+                        if let Some(local_static) = self.s.get() {
+                            let remote_static = &self.rs[..pub_len];
+                            emit_init_peer(local_static.privkey(), remote_static);
+                         }
+                    }
                 },
                 Token::Psk(n) => match self.psks[usize::from(n)] {
                     Some(psk) => {

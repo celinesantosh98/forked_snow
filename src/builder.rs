@@ -15,6 +15,8 @@ use crate::{
     utils::Toggle,
 };
 use subtle::ConstantTimeEq;
+use sha2::derive_pubkey::{emit_setup_static, emit_init_peer};
+
 
 /// The maximum number of PSKs we will allocate for.
 const MAX_PSKS: usize = 10;
@@ -230,6 +232,7 @@ impl<'builder> Builder<'builder> {
         let s = match self.s {
             Some(k) => {
                 (*s_dh).set(k);
+                emit_setup_static(k);
                 Toggle::on(s_dh)
             },
             None => Toggle::off(s_dh),

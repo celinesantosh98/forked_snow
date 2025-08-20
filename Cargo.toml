@@ -88,6 +88,7 @@ pqcrypto-traits = { version = "0.3", optional = true }
 ring = { version = "0.17.12", optional = true }
 
 digest = "0.11.0-rc.0"
+base64 = "0.21"
 
 [dev-dependencies]
 criterion = "0.6"
